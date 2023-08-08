@@ -1,0 +1,22 @@
+maxwell:
+  replicaCount: 1
+  orgName: workden91
+  tenantName: CAPI
+  service:
+    type: ClusterIP
+    port: 80
+fiber:
+  logType: INFO
+  applicationArg:
+    daysAgo: 900
+    kafkaServers: kafka
+    kafkaTopic: workden91.CAPI.kaas_metastore.topic_mapping
+    metastoreURL: http://kaas-metastore
+    executionCheckpointingInterval: 5min
+  fileDetails:
+    provideExplicitly: false
+    fileBucket: dview-nrt
+    fileRegion: ap-south-1
+    fileEndpoint: https://s3.ap-south-1.amazonaws.com/
+    fileSecretKey: empty
+    fileAccessKey: empty

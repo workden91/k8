@@ -1,0 +1,31 @@
+http:
+  http_url: 1
+  http_method: dummy
+  auth_type: dummy
+  username: dummy
+  password: dummy
+  token: dummy
+  headers:
+    Accept: ClusterIP
+    Content-Type: 80
+  params:
+    param1: dummy
+    param1: dummy
+  body: null
+  label: REST_API
+    
+fiber:
+  logType: INFO
+  applicationArg:
+    daysAgo: 900
+    kafkaServers: kafka.default.svc.cluster.local:9092
+    kafkaTopic: dview-destination.BAPI.artemis.source_details, dview-destination.BAPI.dex.keys
+    metastoreURL: http://kaas-metastore
+    executionCheckpointingInterval: 5min
+  fileDetails:
+    provideExplicitly: false
+    fileBucket: dview-nrt
+    fileRegion: ap-south-1
+    fileEndpoint: https://s3.ap-south-1.amazonaws.com/
+    fileSecretKey: empty
+    fileAccessKey: empty

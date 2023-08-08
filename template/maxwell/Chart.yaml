@@ -1,0 +1,11 @@
+apiVersion: v1.0.0
+description: maxwell is used to capture changes in MySQL
+home:  https://github.com/dview-io/maxwell/k8
+icon: https://github.com/dview-io/maxwell/k8
+maintainers:
+  - email: bunty@dview.io
+    name: dp-maxwell
+name: dp-maxwell
+sources:
+  - https://github.com/dview-io/maxwell
+version: 1.0.0

@@ -1,0 +1,136 @@
+org: abc
+tenant: prod
+dbName: ecommerce
+
+postgres:
+  image: abc/postgres-kafka-cdc:v1.0.0
+  imagePullPolicy: Always # IfNotPresent,Always
+
+  applicationArg:
+    sourceDetailsId: 1
+    sourceIdOrName: abc$prod$postgres #This value must be unique
+    retryCount: 1
+    metaStoreUrl: "http://artemis.abc.io"
+    version: v1
+    masterKey: xxxxx
+    cookie: xxxxx
+    tenantId: 1
+    vertical: dp
+
+    batchSize: 0 #Default batch size is 0, 0 -> 500.
+    kafkaBrokers: kafka-0.kafka-headless.default.svc.cluster.local:9092
+    poolSize: 3 #3 should be given
+    healthCheckInitDelay: 30 #In [seconds], should set default 5
+    healthCheckInterval: 30  #In [seconds], should set default 5
+    flattenPayload: false #It makes sure to flatten or not the events at processing
+
+    #Blacklist DataBases which you doesn't want to consume or process.
+    blsDB:
+      - admin
+      - config
+
+    #Keep pooling and pushing checkpointing into health table
+    dataSourceConfig:
+      driverClass: com.mysql.cj.jdbc.Driver
+      username: data
+      password: abc123
+      jdbcUrl: jdbc:mysql://abc-integ-test.cjab8ksmggyx.ap-south-1.rds.amazonaws.com:3306/health?autoReconnect=true
+      acquireIncrement: 5
+      initialPoolSize: 10
+      minConnectionsPerPartition: 10
+      maxConnectionsPerPartition: 50
+      idleMaxAgeInSeconds: 300
+      statementsCacheSize: 500
+      idleConnectionTestPeriodInSeconds: 30
+
+  # Memory Settings
+  javaMinMemory: -Xms5g
+  javaMaxMemory: -Xmx5g
+
+  # Resources to Application & Job!!! Keep applicationMemoryProcessSize & jobMemoryProcessSize in mind
+  resources:
+    limits:
+      cpu: 1
+      memory: 2048Mi
+    requests:
+      cpu: 1m
+      memory: 1024Mi
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: fiber-service-account
+    # Annotations to add to the service account
+    annotations: { }
+
+  autoscaling:
+    enabled: true
+    min: 1
+    max: 1
+    averageMemoryUtilization: 70
+    averageCpuUtilization: 70
+
+  nodeSelector: { }
+
+  tolerations: [ ]
+
+  affinity: { }
+
+fiber:
+  enabled: false
+  image: abc/fiber-nrt-fs:v0.0.1
+  imagePullPolicy: Always
+  jobType: snapshot
+  logType: INFO
+  applicationArg:
+    kafkaTopic: abc-io.data-platform.dex.offline_session, abc-io.data-platform.dex.device_request,
+    metastoreURL: http://kaas-metastore
+    mergeDistribution: ONE_MINS
+  executionCheckpointingInterval: 5min
+  fileDetails:
+    provideExplicitly: false
+    fileBucket: abc-nrt
+    fileRegion: ap-south-1
+    fileEndpoint: https://s3.ap-south-1.amazonaws.com/
+    fileSecretKey: empty
+    fileAccessKey: empty
+  applicationMemoryProcessSize: 5g
+  jobMemoryProcessSize: 5g
+  jobNetworkMemoryMin: 512
+  jobNetworkMemoryMax: 512
+  resources:
+    limits:
+      cpu: "0.1"
+      memory: 6144Mi
+    requests:
+      cpu: "0.1"
+      memory: 6144Mi
+  serviceAccount:
+    create: true
+    name: fiber-service-account
+    annotations: {}
+  autoscaling:
+    enabled: true
+    min: 1
+    max: 1
+    averageMemoryUtilization: 70
+    averageCpuUtilization: 70
+  nodeSelector: {}
+  tolerations: []
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: roles
+                operator: In
+                values:
+                  - workers
+  pvc:
+    enableEFS: false
+    name: fiber-efs
+    storageClassName: efs-sc
+    fileId: xxxxxx

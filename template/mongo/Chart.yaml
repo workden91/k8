@@ -1,0 +1,11 @@
+apiVersion: v1.0.0
+description: mongo is used to capture changes in Mongo
+home:  https://github.com/dview-io/mongodb/k8
+icon: https://github.com/dview-io/mongodb/k8
+maintainers:
+  - email: bunty@dview.io
+    name: mongo-cdc
+name: mongo-cdc
+sources:
+  - https://github.com/dview-io/mongo_cdc
+version: 1.0.0
